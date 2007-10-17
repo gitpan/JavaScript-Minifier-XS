@@ -1,5 +1,6 @@
 package JavaScript::Minifier::XS;
 
+use 5.006;
 use strict;
 use warnings;
 
@@ -8,7 +9,7 @@ require DynaLoader;
 our @ISA = qw(Exporter DynaLoader);
 our @EXPORT_OK = qw(minify);
 
-our $VERSION = '0.01_02';
+our $VERSION = '0.01_03';
 
 bootstrap JavaScript::Minifier::XS $VERSION;
 
