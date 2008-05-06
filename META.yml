@@ -1,11 +1,21 @@
-# http://module-build.sourceforge.net/META-spec.html
-#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
-name:         JavaScript-Minifier-XS
-version:      0.01
-version_from: lib/JavaScript/Minifier/XS.pm
-installdirs:  site
+---
+name: JavaScript-Minifier-XS
+version: 0.02
+author:
+  - Graham TerMarsch (cpan@howlingfrog.com)
+abstract: XS based JavaScript minifier
+license: perl
+resources:
+  license: http://dev.perl.org/licenses/
 requires:
-    Test::More:                    0
-
-distribution_type: module
-generated_by: ExtUtils::MakeMaker version 6.30
+  perl: 5.006
+build_requires:
+  Test::More: 0
+provides:
+  JavaScript::Minifier::XS:
+    file: lib/JavaScript/Minifier/XS.pm
+    version: 0.02
+generated_by: Module::Build version 0.2808
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.2.html
+  version: 1.2
