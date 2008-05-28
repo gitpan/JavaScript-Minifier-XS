@@ -7,6 +7,9 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+/* uncomment to enable debugging output */
+//#define DEBUG 1
+
 /* ****************************************************************************
  * CHARACTER CLASS METHODS
  * ****************************************************************************
@@ -80,6 +83,15 @@ typedef enum {
     NODE_LITERAL,
     NODE_SIGIL
 } NodeType;
+static char* strNodeTypes[] = {
+    "empty",
+    "whitespace",
+    "block comment",
+    "line comment",
+    "identifier",
+    "literal",
+    "sigil"
+    };
 
 struct _Node;
 typedef struct _Node Node;
@@ -218,11 +230,13 @@ void JsClearNodeContents(Node* node) {
 
 /* sets the contents of a node */
 void JsSetNodeContents(Node* node, const char* string, size_t len) {
+    size_t bufSize = len + 1;
+    /* clear node, set new length */
     JsClearNodeContents(node);
     node->length = len;
     /* allocate string, fill with NULLs, and copy */
-    node->contents = malloc( sizeof(char) * (len+1) );
-    memset( node->contents, 0, len );
+    node->contents = malloc( sizeof(char) * bufSize );
+    memset( node->contents, 0, bufSize );
     strncpy( node->contents, string, len );
 }
 
@@ -418,10 +432,10 @@ Node* JsTokenizeString(const char* string) {
                  * our context...
                  */
 
-                /* find last non-whitespace node */
+                /* find last non-whitespace, non-comment node */
                 Node* last = doc.tail;
                 char ch = 0;
-                while (nodeIsWHITESPACE(last))
+                while (nodeIsWHITESPACE(last) || nodeIsCOMMENT(last))
                     last = last->prev;
                 ch = last->contents[last->length-1];
                 /* see if we're "division" or "regexp" */
@@ -447,6 +461,22 @@ Node* JsTokenizeString(const char* string) {
         if (node != doc.tail)
             JsAppendNode(doc.tail, node);
         doc.tail = node;
+
+        /* some debugging info */
+#ifdef DEBUG
+        {
+            int idx;
+            printf("----------------------------------------------------------------\n");
+            printf("%s: %s\n", strNodeTypes[node->type], node->contents);
+            printf("next: '");
+            for (idx=0; idx<=10; idx++) {
+                if ((doc.offset+idx) >= doc.length) break;
+                if (!doc.buffer[doc.offset+idx])    break;
+                printf("%c", doc.buffer[doc.offset+idx]);
+            }
+            printf("'\n");
+        }
+#endif
     }
 
     /* return the node list */
